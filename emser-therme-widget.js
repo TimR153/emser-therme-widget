@@ -31,11 +31,11 @@ async function getAuslastung() {
 async function createWidget(auslastung) {
   let titleSize, percentSize, spacing, footerSize, captionSize;
   if (widgetSize === "small") {
-    titleSize = 18; percentSize = 54; captionSize = 14; spacing = 10; footerSize = 12;
+    titleSize = 16; percentSize = 32; captionSize = 12; spacing = 6; footerSize = 9;
   } else if (widgetSize === "medium") {
-    titleSize = 26; percentSize = 80; captionSize = 20; spacing = 18; footerSize = 16;
+    titleSize = 20; percentSize = 46; captionSize = 16; spacing = 10; footerSize = 12;
   } else {
-    titleSize = 30; percentSize = 110; captionSize = 26; spacing = 26; footerSize = 20;
+    titleSize = 26; percentSize = 60; captionSize = 20; spacing = 14; footerSize = 15;
   }
 
   const accentColor = new Color("#1565c0");
@@ -46,38 +46,44 @@ async function createWidget(auslastung) {
 
   widget.addSpacer();
 
-  const centerStack = widget.addStack();
-  centerStack.layoutVertically();
-  centerStack.centerAlignContent();
-  centerStack.addSpacer();
+  // Zentrale Stack für vertikale und horizontale Zentrierung
+  const centerRow = widget.addStack();
+  centerRow.addSpacer();
+  const centerCol = centerRow.addStack();
+  centerCol.layoutVertically();
+  centerCol.centerAlignContent();
 
-  const title = centerStack.addText("Emser Therme");
+  centerCol.addSpacer();
+
+  const title = centerCol.addText("Emser Therme");
   title.font = Font.boldSystemFont(titleSize);
   title.textColor = accentColor;
   title.centerAlignText();
 
-  centerStack.addSpacer(spacing);
+  centerCol.addSpacer(spacing);
 
   if (auslastung !== null) {
-    const percent = centerStack.addText(auslastung + "%");
+    const percent = centerCol.addText(auslastung + "%");
     percent.font = Font.boldRoundedSystemFont(percentSize);
     percent.textColor = accentColor;
     percent.centerAlignText();
   } else {
-    const error = centerStack.addText("Keine Daten");
+    const error = centerCol.addText("Keine Daten");
     error.font = Font.systemFont(titleSize);
     error.textColor = Color.red();
     error.centerAlignText();
   }
 
-  centerStack.addSpacer(spacing / 2);
+  centerCol.addSpacer(spacing / 2);
 
-  const caption = centerStack.addText("Therme & Sauna");
+  const caption = centerCol.addText("Therme & Sauna");
   caption.font = Font.italicSystemFont(captionSize);
   caption.textColor = accentColor;
   caption.centerAlignText();
 
-  centerStack.addSpacer();
+  centerCol.addSpacer();
+  centerRow.addSpacer();
+
   widget.addSpacer();
 
   const footerStack = widget.addStack();
