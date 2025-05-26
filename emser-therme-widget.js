@@ -18,7 +18,6 @@ async function getAuslastung() {
   try {
     const req = new Request(URL);
     const html = await req.loadString();
-    // Regex für <div class="current">18%</div>
     const match = html.match(/<div class="current">(\d+)%<\/div>/);
     if (match && match[1]) {
       return parseInt(match[1]);
@@ -45,32 +44,42 @@ async function createWidget(auslastung) {
   widget.backgroundColor = new Color("#1C1C1E");
   widget.setPadding(spacing, spacing, spacing, spacing);
 
-  const title = widget.addText("Emser Therme");
+  const centerStack = widget.addStack();
+  centerStack.layoutVertically();
+  centerStack.centerAlignContent();
+  centerStack.size = new Size(0, 0);
+
+  centerStack.addSpacer();
+
+  const title = centerStack.addText("Emser Therme");
   title.font = Font.boldSystemFont(titleSize);
   title.textColor = accentColor;
   title.centerAlignText();
-  widget.addSpacer(spacing);
+
+  centerStack.addSpacer(spacing);
 
   if (auslastung !== null) {
-    const percent = widget.addText(auslastung + "%");
+    const percent = centerStack.addText(auslastung + "%");
     percent.font = Font.boldRoundedSystemFont(percentSize);
     percent.textColor = accentColor;
     percent.centerAlignText();
   } else {
-    const error = widget.addText("Keine Daten");
+    const error = centerStack.addText("Keine Daten");
     error.font = Font.systemFont(titleSize);
     error.textColor = Color.red();
     error.centerAlignText();
   }
 
-  widget.addSpacer(spacing / 2);
-  const caption = widget.addText("Therme & Sauna");
+  centerStack.addSpacer(spacing / 2);
+
+  const caption = centerStack.addText("Therme & Sauna");
   caption.font = Font.italicSystemFont(captionSize);
   caption.textColor = accentColor;
   caption.centerAlignText();
 
-  widget.addSpacer();
+  centerStack.addSpacer();
 
+  widget.addSpacer();
   const footerStack = widget.addStack();
   footerStack.addSpacer();
   const df = new DateFormatter();
