@@ -32,17 +32,17 @@ async function getAuslastung() {
 
 async function createWidget(auslastung) {
   // Layout-Parameter je nach Widgetgröße
-  let titleSize, percentSize, spacing, footerSize;
+  let titleSize, percentSize, spacing, footerSize, captionSize;
   if (widgetSize === "small") {
-    titleSize = 14; percentSize = 36; spacing = 6; footerSize = 8;
+    titleSize = 14; percentSize = 36; captionSize = 12; spacing = 6; footerSize = 8;
   } else if (widgetSize === "medium") {
-    titleSize = 18; percentSize = 48; spacing = 10; footerSize = 12;
+    titleSize = 18; percentSize = 48; captionSize = 16; spacing = 10; footerSize = 12;
   } else {
-    titleSize = 22; percentSize = 60; spacing = 16; footerSize = 14;
+    titleSize = 22; percentSize = 60; captionSize = 18; spacing = 16; footerSize = 14;
   }
 
-  // Dunkles Blau als Akzentfarbe
-  const accentColor = new Color("#003366");
+  // Kräftiges, gut lesbares Blau
+  const accentColor = new Color("#1565c0");
 
   const widget = new ListWidget();
   widget.backgroundColor = new Color("#1C1C1E");
@@ -53,13 +53,6 @@ async function createWidget(auslastung) {
   title.font = Font.boldSystemFont(titleSize);
   title.textColor = accentColor;
   title.centerAlignText();
-  widget.addSpacer(spacing);
-
-  // Bildunterschrift
-  const caption = widget.addText("Therme & Sauna");
-  caption.font = Font.italicSystemFont(titleSize - 2);
-  caption.textColor = accentColor;
-  caption.centerAlignText();
   widget.addSpacer(spacing);
 
   // Hauptwert
@@ -74,6 +67,14 @@ async function createWidget(auslastung) {
     error.textColor = Color.red();
     error.centerAlignText();
   }
+
+  // Bildunterschrift unter der Prozentanzeige
+  widget.addSpacer(spacing / 2);
+  const caption = widget.addText("Therme & Sauna");
+  caption.font = Font.italicSystemFont(captionSize);
+  caption.textColor = accentColor;
+  caption.centerAlignText();
+
   widget.addSpacer(spacing);
 
   // Footer
@@ -86,11 +87,4 @@ async function createWidget(auslastung) {
   lastUpdate.textOpacity = 0.7;
 
   return widget;
-}
-
-function getColorForPercentage(p) {
-  if (p < 20) return new Color("#4CD964");      // Grün
-  if (p < 50) return new Color("#FFCC00");      // Gelb
-  if (p < 75) return new Color("#FF9500");      // Orange
-  return new Color("#FF3B30");                  // Rot
 }
