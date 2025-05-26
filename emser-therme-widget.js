@@ -46,44 +46,38 @@ async function createWidget(auslastung) {
 
   widget.addSpacer();
 
-  // Zentrale Stack für vertikale und horizontale Zentrierung
-  const centerRow = widget.addStack();
-  centerRow.addSpacer();
-  const centerCol = centerRow.addStack();
-  centerCol.layoutVertically();
-  centerCol.centerAlignContent();
+  const centerStack = widget.addStack();
+  centerStack.layoutVertically();
+  centerStack.centerAlignContent();
+  centerStack.addSpacer();
 
-  centerCol.addSpacer();
-
-  const title = centerCol.addText("Emser Therme");
+  const title = centerStack.addText("Emser Therme");
   title.font = Font.boldSystemFont(titleSize);
   title.textColor = accentColor;
   title.centerAlignText();
 
-  centerCol.addSpacer(spacing);
+  centerStack.addSpacer(spacing);
 
   if (auslastung !== null) {
-    const percent = centerCol.addText(auslastung + "%");
+    const percent = centerStack.addText(auslastung + "%");
     percent.font = Font.boldRoundedSystemFont(percentSize);
     percent.textColor = accentColor;
     percent.centerAlignText();
   } else {
-    const error = centerCol.addText("Keine Daten");
+    const error = centerStack.addText("Keine Daten");
     error.font = Font.systemFont(titleSize);
     error.textColor = Color.red();
     error.centerAlignText();
   }
 
-  centerCol.addSpacer(spacing / 2);
+  centerStack.addSpacer(spacing / 2);
 
-  const caption = centerCol.addText("Therme & Sauna");
+  const caption = centerStack.addText("Therme & Sauna");
   caption.font = Font.italicSystemFont(captionSize);
   caption.textColor = accentColor;
   caption.centerAlignText();
 
-  centerCol.addSpacer();
-  centerRow.addSpacer();
-
+  centerStack.addSpacer();
   widget.addSpacer();
 
   const footerStack = widget.addStack();
