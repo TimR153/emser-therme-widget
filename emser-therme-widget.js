@@ -1,4 +1,3 @@
-// Emser Therme Auslastung Widget ohne Logo für Scriptable
 const URL = "https://www.emser-therme.de/";
 
 const widgetSize = config.widgetFamily || "large";
@@ -31,7 +30,6 @@ async function getAuslastung() {
 }
 
 async function createWidget(auslastung) {
-  // Layout-Parameter je nach Widgetgröße
   let titleSize, percentSize, spacing, footerSize, captionSize;
   if (widgetSize === "small") {
     titleSize = 14; percentSize = 36; captionSize = 12; spacing = 6; footerSize = 8;
@@ -41,21 +39,18 @@ async function createWidget(auslastung) {
     titleSize = 22; percentSize = 60; captionSize = 18; spacing = 16; footerSize = 14;
   }
 
-  // Kräftiges, gut lesbares Blau
   const accentColor = new Color("#1565c0");
 
   const widget = new ListWidget();
   widget.backgroundColor = new Color("#1C1C1E");
   widget.setPadding(spacing, spacing, spacing, spacing);
 
-  // Titel als Text (kein Logo)
   const title = widget.addText("Emser Therme");
   title.font = Font.boldSystemFont(titleSize);
   title.textColor = accentColor;
   title.centerAlignText();
   widget.addSpacer(spacing);
 
-  // Hauptwert
   if (auslastung !== null) {
     const percent = widget.addText(auslastung + "%");
     percent.font = Font.boldRoundedSystemFont(percentSize);
@@ -68,22 +63,21 @@ async function createWidget(auslastung) {
     error.centerAlignText();
   }
 
-  // Bildunterschrift unter der Prozentanzeige
   widget.addSpacer(spacing / 2);
   const caption = widget.addText("Therme & Sauna");
   caption.font = Font.italicSystemFont(captionSize);
   caption.textColor = accentColor;
   caption.centerAlignText();
 
-  widget.addSpacer(spacing);
+  widget.addSpacer();
 
-  // Footer
+  const footerStack = widget.addStack();
+  footerStack.addSpacer();
   const df = new DateFormatter();
   df.useMediumTimeStyle();
-  const lastUpdate = widget.addText("Letztes Update: " + df.string(new Date()));
+  const lastUpdate = footerStack.addText("Letztes Update: " + df.string(new Date()));
   lastUpdate.font = Font.lightSystemFont(footerSize);
   lastUpdate.textColor = Color.gray();
-  lastUpdate.rightAlignText();
   lastUpdate.textOpacity = 0.7;
 
   return widget;
