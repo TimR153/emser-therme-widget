@@ -1,3 +1,4 @@
+// Emser Therme Auslastung Widget ohne Logo für Scriptable
 const URL = "https://www.emser-therme.de/";
 
 const widgetSize = config.widgetFamily || "large";
@@ -8,7 +9,7 @@ if (!config.runsInWidget) {
   switch (widgetSize) {
     case "small": await widget.presentSmall(); break;
     case "large": await widget.presentLarge(); break;
-    default: await widget.presentMedium();
+    default: await widget.presentMedium(); break;
   }
 }
 Script.setWidget(widget);
@@ -40,21 +41,32 @@ async function createWidget(auslastung) {
     titleSize = 22; percentSize = 60; spacing = 16; footerSize = 14;
   }
 
+  // Dunkles Blau als Akzentfarbe
+  const accentColor = new Color("#003366");
+
   const widget = new ListWidget();
   widget.backgroundColor = new Color("#1C1C1E");
   widget.setPadding(spacing, spacing, spacing, spacing);
 
-  // Header
-  const header = widget.addText("♨️ Emser Therme");
-  header.font = Font.boldSystemFont(titleSize);
-  header.textColor = Color.white();
+  // Titel als Text (kein Logo)
+  const title = widget.addText("Emser Therme");
+  title.font = Font.boldSystemFont(titleSize);
+  title.textColor = accentColor;
+  title.centerAlignText();
+  widget.addSpacer(spacing);
+
+  // Bildunterschrift
+  const caption = widget.addText("Therme & Sauna");
+  caption.font = Font.italicSystemFont(titleSize - 2);
+  caption.textColor = accentColor;
+  caption.centerAlignText();
   widget.addSpacer(spacing);
 
   // Hauptwert
   if (auslastung !== null) {
     const percent = widget.addText(auslastung + "%");
     percent.font = Font.boldRoundedSystemFont(percentSize);
-    percent.textColor = getColorForPercentage(auslastung);
+    percent.textColor = accentColor;
     percent.centerAlignText();
   } else {
     const error = widget.addText("Keine Daten");
