@@ -31,11 +31,11 @@ async function getAuslastung() {
 async function createWidget(auslastung) {
   let titleSize, percentSize, spacing, footerSize, captionSize;
   if (widgetSize === "small") {
-    titleSize = 22; percentSize = 54; captionSize = 18; spacing = 10; footerSize = 12;
+    titleSize = 16; percentSize = 32; captionSize = 12; spacing = 6; footerSize = 9;
   } else if (widgetSize === "medium") {
-    titleSize = 30; percentSize = 80; captionSize = 26; spacing = 18; footerSize = 16;
+    titleSize = 20; percentSize = 46; captionSize = 16; spacing = 10; footerSize = 12;
   } else {
-    titleSize = 38; percentSize = 110; captionSize = 34; spacing = 26; footerSize = 20;
+    titleSize = 26; percentSize = 60; captionSize = 20; spacing = 14; footerSize = 15;
   }
 
   const accentColor = new Color("#1565c0");
