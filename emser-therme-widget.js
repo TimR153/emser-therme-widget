@@ -31,11 +31,11 @@ async function getAuslastung() {
 async function createWidget(auslastung) {
   let titleSize, percentSize, spacing, footerSize, captionSize;
   if (widgetSize === "small") {
-    titleSize = 14; percentSize = 36; captionSize = 12; spacing = 6; footerSize = 8;
+    titleSize = 22; percentSize = 54; captionSize = 18; spacing = 10; footerSize = 12;
   } else if (widgetSize === "medium") {
-    titleSize = 18; percentSize = 48; captionSize = 16; spacing = 10; footerSize = 12;
+    titleSize = 30; percentSize = 80; captionSize = 26; spacing = 18; footerSize = 16;
   } else {
-    titleSize = 22; percentSize = 60; captionSize = 18; spacing = 16; footerSize = 14;
+    titleSize = 38; percentSize = 110; captionSize = 34; spacing = 26; footerSize = 20;
   }
 
   const accentColor = new Color("#1565c0");
@@ -44,11 +44,11 @@ async function createWidget(auslastung) {
   widget.backgroundColor = new Color("#1C1C1E");
   widget.setPadding(spacing, spacing, spacing, spacing);
 
+  widget.addSpacer();
+
   const centerStack = widget.addStack();
   centerStack.layoutVertically();
   centerStack.centerAlignContent();
-  centerStack.size = new Size(0, 0);
-
   centerStack.addSpacer();
 
   const title = centerStack.addText("Emser Therme");
@@ -78,8 +78,8 @@ async function createWidget(auslastung) {
   caption.centerAlignText();
 
   centerStack.addSpacer();
-
   widget.addSpacer();
+
   const footerStack = widget.addStack();
   footerStack.addSpacer();
   const df = new DateFormatter();
