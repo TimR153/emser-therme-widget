@@ -54,11 +54,11 @@ async function showPreview(widget, widgetSize) {
 
 function getSizes(widgetSize) {
   if (widgetSize === "small") {
-    return { barWidth: 90, barHeight: 12, titleSize: 16, percentSize: 30, captionSize: 14, footerSize: 10, spacing: 8, padding: 4 };
+    return { barWidth: 70, barHeight: 18, titleSize: 26, percentSize: 40, captionSize: 18, footerSize: 10, spacing: 20, padding: 8 };
   } else if (widgetSize === "medium") {
-    return { barWidth: 180, barHeight: 18, titleSize: 18, percentSize: 32, captionSize: 16, footerSize: 12, spacing: 8, padding: 4 };
+    return { barWidth: 180, barHeight: 18, titleSize: 18, percentSize: 32, captionSize: 16, footerSize: 12, spacing: 16, padding: 8 };
   } else {
-    return { barWidth: 260, barHeight: 24, titleSize: 22, percentSize: 38, captionSize: 18, footerSize: 15, spacing: 8, padding: 4 };
+    return { barWidth: 260, barHeight: 24, titleSize: 22, percentSize: 38, captionSize: 18, footerSize: 15, spacing: 16, padding: 8 };
   }
 }
 
@@ -113,8 +113,8 @@ function addFooter(widget, footerSize) {
   const lastUpdate = footerStack.addText("Letztes Update: " + df.string(new Date()));
   lastUpdate.font = Font.lightSystemFont(footerSize);
   lastUpdate.textColor = Color.gray();
-  lastUpdate.textOpacity = 0.7;
   lastUpdate.centerAlignText();
+  lastUpdate.textOpacity = 0.7;
 }
 
 function drawBarChart(percent, width, height, fgColor, bgColor) {
