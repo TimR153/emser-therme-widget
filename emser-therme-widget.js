@@ -29,16 +29,16 @@ async function getAuslastung() {
 }
 
 async function createWidget(auslastung) {
-  let titleSize, percentSize, spacing, footerSize, captionSize;
+  let titleSize, percentSize, spacing, footerSize, captionSize, chartSize;
   if (widgetSize === "small") {
-    titleSize = 16; percentSize = 32; captionSize = 12; spacing = 6; footerSize = 9;
+    titleSize = 16; percentSize = 18; captionSize = 12; spacing = 6; footerSize = 9; chartSize = 70;
   } else if (widgetSize === "medium") {
-    titleSize = 20; percentSize = 46; captionSize = 16; spacing = 10; footerSize = 12;
+    titleSize = 20; percentSize = 24; captionSize = 16; spacing = 10; footerSize = 12; chartSize = 110;
   } else {
-    titleSize = 26; percentSize = 60; captionSize = 20; spacing = 14; footerSize = 15;
+    titleSize = 26; percentSize = 32; captionSize = 20; spacing = 14; footerSize = 15; chartSize = 150;
   }
 
-  const accentColor = new Color("#1565c0");
+  const accentColor = new Color("#1592c0");
 
   const widget = new ListWidget();
   widget.backgroundColor = new Color("#1C1C1E");
@@ -46,7 +46,6 @@ async function createWidget(auslastung) {
 
   widget.addSpacer();
 
-  // Zentrale Stack für vertikale und horizontale Zentrierung
   const centerRow = widget.addStack();
   centerRow.addSpacer();
   const centerCol = centerRow.addStack();
@@ -61,6 +60,17 @@ async function createWidget(auslastung) {
   title.centerAlignText();
 
   centerCol.addSpacer(spacing);
+
+  let chartImg;
+  if (auslastung !== null) {
+    chartImg = drawPieChart(auslastung, chartSize, accentColor);
+  } else {
+    chartImg = drawPieChart(0, chartSize, Color.gray());
+  }
+  const imgStack = centerCol.addStack();
+  imgStack.addSpacer();
+  imgStack.addImage(chartImg);
+  imgStack.addSpacer();
 
   if (auslastung !== null) {
     const percent = centerCol.addText(auslastung + "%");
@@ -87,13 +97,33 @@ async function createWidget(auslastung) {
   widget.addSpacer();
 
   const footerStack = widget.addStack();
-  footerStack.addSpacer();
   const df = new DateFormatter();
   df.useMediumTimeStyle();
   const lastUpdate = footerStack.addText("Letztes Update: " + df.string(new Date()));
   lastUpdate.font = Font.lightSystemFont(footerSize);
   lastUpdate.textColor = Color.gray();
   lastUpdate.textOpacity = 0.7;
+  lastUpdate.leftAlignText();
 
   return widget;
+}
+
+function drawPieChart(percent, size, color) {
+  const ctx = new DrawContext();
+  ctx.size = new Size(size, size);
+  ctx.opaque = false;
+  ctx.respectScreenScale = true;
+
+  ctx.setFillColor(new Color("#333333", 0.2));
+  ctx.fillEllipse(new Rect(0, 0, size, size));
+
+  const angle = (percent / 100) * 2 * Math.PI;
+  ctx.setFillColor(color);
+  ctx.beginPath();
+  ctx.moveToPoint(size / 2, size / 2);
+  ctx.addArc(size / 2, size / 2, size / 2, -Math.PI / 2, -Math.PI / 2 + angle, false);
+  ctx.closePath();
+  ctx.fillPath();
+
+  return ctx.getImage();
 }
