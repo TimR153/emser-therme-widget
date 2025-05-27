@@ -119,10 +119,9 @@ function drawPieChart(percent, size, color) {
 
   const angle = (percent / 100) * 2 * Math.PI;
   ctx.setFillColor(color);
-  ctx.beginPath(); // <-- Hier!
+
   ctx.moveToPoint(size / 2, size / 2);
   ctx.addArc(size / 2, size / 2, size / 2, -Math.PI / 2, -Math.PI / 2 + angle, false);
-  ctx.closePath();
   ctx.fillPath();
 
   return ctx.getImage();
