@@ -1,4 +1,4 @@
-// Emser Therme Auslastung Donut-Chart Widget
+// Emser Therme Auslastung Donut-Chart Widget – nur mit dokumentierten DrawContext-Methoden
 
 const URL = "https://www.emser-therme.de/";
 const widgetSize = config.widgetFamily || "large";
@@ -99,27 +99,34 @@ async function createWidget(auslastung) {
   return widget;
 }
 
-// Donut-Chart zeichnen
 function drawDonutChart(percent, size, thickness, fgColor, bgColor) {
   const ctx = new DrawContext();
   ctx.size = new Size(size, size);
   ctx.opaque = false;
   ctx.respectScreenScale = true;
 
-  // Hintergrund-Ring
+  // Hintergrund-Kreis (vollständig)
   ctx.setStrokeColor(bgColor);
   ctx.setLineWidth(thickness);
   ctx.strokeEllipse(new Rect(thickness/2, thickness/2, size-thickness, size-thickness));
 
-  // Fortschritts-Ring
+  // Vordergrund-Bogen (Teilkreis)
   if (typeof percent === "number" && percent > 0) {
+    const path = new Path();
+    const center = new Point(size/2, size/2);
+    const radius = (size - thickness) / 2;
+    const startAngle = -Math.PI/2;
+    const endAngle = startAngle + (2 * Math.PI * percent / 100);
+
+    // Pfad für Bogen
+    path.addArc(center, radius, startAngle, endAngle, false);
+
+    ctx.addPath(path);
     ctx.setStrokeColor(fgColor);
     ctx.setLineWidth(thickness);
-    ctx.setLineCap("round");
-    const start = -Math.PI/2;
-    const end = start + (2 * Math.PI * percent / 100);
-    ctx.strokeArc(new Rect(thickness/2, thickness/2, size-thickness, size-thickness), start, end, false);
+    ctx.strokePath();
   }
 
   return ctx.getImage();
 }
+
