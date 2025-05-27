@@ -1,4 +1,4 @@
-// Emser Therme Auslastung Widget (ohne DrawContext, 100% kompatibel)
+// Emser Therme Auslastung Donut-Chart Widget
 
 const URL = "https://www.emser-therme.de/";
 const widgetSize = config.widgetFamily || "large";
@@ -30,18 +30,19 @@ async function getAuslastung() {
 }
 
 async function createWidget(auslastung) {
-  // Größenanpassung für verschiedene Widgetgrößen
-  let titleSize, percentSize, emojiSize, captionSize, footerSize, spacing, emojiCount;
+  // Größe je nach Widget
+  let donutSize, donutThickness, titleSize, percentSize, captionSize, footerSize, spacing;
   if (widgetSize === "small") {
-    titleSize = 13; percentSize = 26; emojiSize = 18; captionSize = 10; footerSize = 8; spacing = 4; emojiCount = 5;
+    donutSize = 80; donutThickness = 12; titleSize = 13; percentSize = 18; captionSize = 10; footerSize = 8; spacing = 4;
   } else if (widgetSize === "medium") {
-    titleSize = 18; percentSize = 38; emojiSize = 28; captionSize = 14; footerSize = 12; spacing = 8; emojiCount = 10;
+    donutSize = 120; donutThickness = 18; titleSize = 18; percentSize = 28; captionSize = 14; footerSize = 12; spacing = 8;
   } else {
-    titleSize = 22; percentSize = 54; emojiSize = 36; captionSize = 18; footerSize = 15; spacing = 12; emojiCount = 15;
+    donutSize = 170; donutThickness = 24; titleSize = 22; percentSize = 38; captionSize = 18; footerSize = 15; spacing = 10;
   }
 
   const accentColor = new Color("#1565c0");
   const bgColor = new Color("#1C1C1E");
+  const donutBg = new Color("#333333", 0.3);
 
   const widget = new ListWidget();
   widget.backgroundColor = bgColor;
@@ -54,7 +55,15 @@ async function createWidget(auslastung) {
   title.leftAlignText();
   widget.addSpacer(spacing);
 
-  // Prozentzahl groß
+  // Donut-Chart Bild
+  const donutImg = drawDonutChart(auslastung, donutSize, donutThickness, accentColor, donutBg);
+  const imgStack = widget.addStack();
+  imgStack.addSpacer();
+  imgStack.addImage(donutImg);
+  imgStack.addSpacer();
+  widget.addSpacer(spacing);
+
+  // Prozentzahl mittig
   const percentStack = widget.addStack();
   percentStack.addSpacer();
   if (auslastung !== null) {
@@ -69,20 +78,6 @@ async function createWidget(auslastung) {
     errorText.centerAlignText();
   }
   percentStack.addSpacer();
-  widget.addSpacer(spacing);
-
-  // Emoji-Visualisierung (Kreise gefüllt/leer)
-  if (auslastung !== null) {
-    let filled = Math.round((auslastung / 100) * emojiCount);
-    let empty = emojiCount - filled;
-    let emojiLine = "🔵".repeat(filled) + "⚪️".repeat(empty);
-    const emojiStack = widget.addStack();
-    emojiStack.addSpacer();
-    const emojiText = emojiStack.addText(emojiLine);
-    emojiText.font = Font.systemFont(emojiSize);
-    emojiStack.addSpacer();
-    widget.addSpacer(spacing);
-  }
 
   // Untertitel
   const caption = widget.addText("Therme & Sauna");
@@ -102,4 +97,29 @@ async function createWidget(auslastung) {
   lastUpdate.leftAlignText();
 
   return widget;
+}
+
+// Donut-Chart zeichnen
+function drawDonutChart(percent, size, thickness, fgColor, bgColor) {
+  const ctx = new DrawContext();
+  ctx.size = new Size(size, size);
+  ctx.opaque = false;
+  ctx.respectScreenScale = true;
+
+  // Hintergrund-Ring
+  ctx.setStrokeColor(bgColor);
+  ctx.setLineWidth(thickness);
+  ctx.strokeEllipse(new Rect(thickness/2, thickness/2, size-thickness, size-thickness));
+
+  // Fortschritts-Ring
+  if (typeof percent === "number" && percent > 0) {
+    ctx.setStrokeColor(fgColor);
+    ctx.setLineWidth(thickness);
+    ctx.setLineCap("round");
+    const start = -Math.PI/2;
+    const end = start + (2 * Math.PI * percent / 100);
+    ctx.strokeArc(new Rect(thickness/2, thickness/2, size-thickness, size-thickness), start, end, false);
+  }
+
+  return ctx.getImage();
 }
