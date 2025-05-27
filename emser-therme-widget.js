@@ -27,13 +27,13 @@ async function getAuslastung() {
 async function createWidget(auslastung, widgetSize) {
   const sizes = getSizes(widgetSize);
 
-  const accentColor = new Color("#1565c0");
+  const accentColor = new Color("#2fb9eb");
   const bgColor = new Color("#1C1C1E");
   const barBg = new Color("#333333", 0.3);
 
   const widget = new ListWidget();
   widget.backgroundColor = bgColor;
-  widget.setPadding(sizes.spacing, sizes.spacing, sizes.spacing, sizes.spacing);
+  widget.setPadding(sizes.padding, sizes.padding, sizes.padding, sizes.padding);
 
   addTitle(widget, accentColor, sizes.titleSize, sizes.spacing);
   addBar(widget, auslastung, sizes, accentColor, barBg, sizes.spacing);
@@ -54,11 +54,11 @@ async function showPreview(widget, widgetSize) {
 
 function getSizes(widgetSize) {
   if (widgetSize === "small") {
-    return { barWidth: 90, barHeight: 12, titleSize: 16, percentSize: 30, captionSize: 14, footerSize: 10, spacing: 2 };
+    return { barWidth: 90, barHeight: 12, titleSize: 16, percentSize: 30, captionSize: 14, footerSize: 10, spacing: 8, padding: 4 };
   } else if (widgetSize === "medium") {
-    return { barWidth: 180, barHeight: 18, titleSize: 18, percentSize: 32, captionSize: 16, footerSize: 12, spacing: 4 };
+    return { barWidth: 180, barHeight: 18, titleSize: 18, percentSize: 32, captionSize: 16, footerSize: 12, spacing: 8, padding: 4 };
   } else {
-    return { barWidth: 260, barHeight: 24, titleSize: 22, percentSize: 38, captionSize: 18, footerSize: 15, spacing: 8 };
+    return { barWidth: 260, barHeight: 24, titleSize: 22, percentSize: 38, captionSize: 18, footerSize: 15, spacing: 8, padding: 4 };
   }
 }
 
@@ -67,6 +67,7 @@ function addTitle(widget, accentColor, titleSize, spacing) {
   title.font = Font.boldSystemFont(titleSize);
   title.textColor = accentColor;
   title.leftAlignText();
+  title.centerAlignText();
   widget.addSpacer(spacing);
 }
 
@@ -101,7 +102,7 @@ function addCaption(widget, accentColor, captionSize, spacing) {
   const caption = widget.addText("Therme & Sauna");
   caption.font = Font.italicSystemFont(captionSize);
   caption.textColor = accentColor;
-  caption.leftAlignText();
+  caption.centerAlignText();
   widget.addSpacer(spacing);
 }
 
@@ -113,7 +114,7 @@ function addFooter(widget, footerSize) {
   lastUpdate.font = Font.lightSystemFont(footerSize);
   lastUpdate.textColor = Color.gray();
   lastUpdate.textOpacity = 0.7;
-  lastUpdate.leftAlignText();
+  lastUpdate.centerAlignText();
 }
 
 function drawBarChart(percent, width, height, fgColor, bgColor) {
