@@ -1,5 +1,4 @@
 const URL = "https://www.emser-therme.de/";
-
 const widgetSize = config.widgetFamily || "large";
 const auslastung = await getAuslastung();
 const widget = await createWidget(auslastung);
@@ -29,72 +28,56 @@ async function getAuslastung() {
 }
 
 async function createWidget(auslastung) {
-  let titleSize, percentSize, spacing, footerSize, captionSize, chartSize;
+  let donutSize, donutThickness, titleSize, percentSize, captionSize, footerSize, spacing;
   if (widgetSize === "small") {
-    titleSize = 16; percentSize = 18; captionSize = 12; spacing = 6; footerSize = 9; chartSize = 70;
+    donutSize = 80; donutThickness = 12; titleSize = 13; percentSize = 18; captionSize = 10; footerSize = 8; spacing = 4;
   } else if (widgetSize === "medium") {
-    titleSize = 20; percentSize = 24; captionSize = 16; spacing = 10; footerSize = 12; chartSize = 110;
+    donutSize = 120; donutThickness = 18; titleSize = 18; percentSize = 28; captionSize = 14; footerSize = 12; spacing = 8;
   } else {
-    titleSize = 26; percentSize = 32; captionSize = 20; spacing = 14; footerSize = 15; chartSize = 150;
+    donutSize = 170; donutThickness = 24; titleSize = 22; percentSize = 38; captionSize = 18; footerSize = 15; spacing = 10;
   }
 
-  const accentColor = new Color("#1592c0");
+  const accentColor = new Color("#1565c0");
+  const bgColor = new Color("#1C1C1E");
+  const donutBg = new Color("#333333", 0.3);
 
   const widget = new ListWidget();
-  widget.backgroundColor = new Color("#1C1C1E");
+  widget.backgroundColor = bgColor;
   widget.setPadding(spacing, spacing, spacing, spacing);
 
-  widget.addSpacer();
-
-  const centerRow = widget.addStack();
-  centerRow.addSpacer();
-  const centerCol = centerRow.addStack();
-  centerCol.layoutVertically();
-  centerCol.centerAlignContent();
-
-  centerCol.addSpacer();
-
-  const title = centerCol.addText("Emser Therme");
+  const title = widget.addText("Emser Therme");
   title.font = Font.boldSystemFont(titleSize);
   title.textColor = accentColor;
-  title.centerAlignText();
+  title.leftAlignText();
+  widget.addSpacer(spacing);
 
-  centerCol.addSpacer(spacing);
-
-  let chartImg;
-  if (auslastung !== null) {
-    chartImg = drawPieChart(auslastung, chartSize, accentColor);
-  } else {
-    chartImg = drawPieChart(0, chartSize, Color.gray());
-  }
-  const imgStack = centerCol.addStack();
+  const donutImg = await drawDonutChart(auslastung, donutSize, donutThickness, accentColor, donutBg);
+  const imgStack = widget.addStack();
   imgStack.addSpacer();
-  imgStack.addImage(chartImg);
+  imgStack.addImage(donutImg);
   imgStack.addSpacer();
+  widget.addSpacer(spacing);
 
+  const percentStack = widget.addStack();
+  percentStack.addSpacer();
   if (auslastung !== null) {
-    const percent = centerCol.addText(auslastung + "%");
-    percent.font = Font.boldRoundedSystemFont(percentSize);
-    percent.textColor = accentColor;
-    percent.centerAlignText();
+    const percentText = percentStack.addText(`${auslastung}%`);
+    percentText.font = Font.boldRoundedSystemFont(percentSize);
+    percentText.textColor = accentColor;
+    percentText.centerAlignText();
   } else {
-    const error = centerCol.addText("Keine Daten");
-    error.font = Font.systemFont(titleSize);
-    error.textColor = Color.red();
-    error.centerAlignText();
+    const errorText = percentStack.addText("Keine Daten");
+    errorText.font = Font.systemFont(percentSize);
+    errorText.textColor = Color.red();
+    errorText.centerAlignText();
   }
+  percentStack.addSpacer();
 
-  centerCol.addSpacer(spacing / 2);
-
-  const caption = centerCol.addText("Therme & Sauna");
+  const caption = widget.addText("Therme & Sauna");
   caption.font = Font.italicSystemFont(captionSize);
   caption.textColor = accentColor;
-  caption.centerAlignText();
-
-  centerCol.addSpacer();
-  centerRow.addSpacer();
-
-  widget.addSpacer();
+  caption.leftAlignText();
+  widget.addSpacer(spacing);
 
   const footerStack = widget.addStack();
   const df = new DateFormatter();
@@ -108,21 +91,24 @@ async function createWidget(auslastung) {
   return widget;
 }
 
-function drawPieChart(percent, size, color) {
+async function drawDonutChart(percent, size, thickness, fgColor, bgColor) {
   const ctx = new DrawContext();
   ctx.size = new Size(size, size);
   ctx.opaque = false;
   ctx.respectScreenScale = true;
 
-  ctx.setFillColor(new Color("#333333", 0.2));
-  ctx.fillEllipse(new Rect(0, 0, size, size));
+  ctx.setStrokeColor(bgColor);
+  ctx.setLineWidth(thickness);
+  ctx.strokeEllipse(new Rect(thickness/2, thickness/2, size-thickness, size-thickness));
 
-  const angle = (percent / 100) * 2 * Math.PI;
-  ctx.setFillColor(color);
-
-  ctx.moveToPoint(size / 2, size / 2);
-  ctx.addArc(size / 2, size / 2, size / 2, -Math.PI / 2, -Math.PI / 2 + angle, false);
-  ctx.fillPath();
+  if (typeof percent === "number" && percent > 0) {
+    ctx.setStrokeColor(fgColor);
+    ctx.setLineWidth(thickness);
+    ctx.setLineCap(1); 
+    const start = -Math.PI/2;
+    const end = start + (2 * Math.PI * percent / 100);
+    ctx.strokeArc(new Rect(thickness/2, thickness/2, size-thickness, size-thickness), start, end, false);
+  }
 
   return ctx.getImage();
 }
