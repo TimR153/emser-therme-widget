@@ -104,7 +104,7 @@ async function drawDonutChart(percent, size, thickness, fgColor, bgColor) {
   if (typeof percent === "number" && percent > 0) {
     ctx.setStrokeColor(fgColor);
     ctx.setLineWidth(thickness);
-    ctx.setLineCap(1); 
+    ctx.setLineCap(1); // Rundes Ende
     const start = -Math.PI/2;
     const end = start + (2 * Math.PI * percent / 100);
     ctx.strokeArc(new Rect(thickness/2, thickness/2, size-thickness, size-thickness), start, end, false);
