@@ -1,4 +1,4 @@
-// Emser Therme Auslastung Donut-Chart Widget – nur mit dokumentierten DrawContext-Methoden
+// Emser Therme Auslastung als Ladebalken (nur dokumentierte Methoden!)
 
 const URL = "https://www.emser-therme.de/";
 const widgetSize = config.widgetFamily || "large";
@@ -30,19 +30,19 @@ async function getAuslastung() {
 }
 
 async function createWidget(auslastung) {
-  // Größe je nach Widget
-  let donutSize, donutThickness, titleSize, percentSize, captionSize, footerSize, spacing;
+  // Größenanpassung
+  let barWidth, barHeight, titleSize, percentSize, captionSize, footerSize, spacing;
   if (widgetSize === "small") {
-    donutSize = 80; donutThickness = 12; titleSize = 13; percentSize = 18; captionSize = 10; footerSize = 8; spacing = 4;
+    barWidth = 90; barHeight = 12; titleSize = 13; percentSize = 18; captionSize = 10; footerSize = 8; spacing = 4;
   } else if (widgetSize === "medium") {
-    donutSize = 120; donutThickness = 18; titleSize = 18; percentSize = 28; captionSize = 14; footerSize = 12; spacing = 8;
+    barWidth = 180; barHeight = 18; titleSize = 18; percentSize = 28; captionSize = 14; footerSize = 12; spacing = 8;
   } else {
-    donutSize = 170; donutThickness = 24; titleSize = 22; percentSize = 38; captionSize = 18; footerSize = 15; spacing = 10;
+    barWidth = 260; barHeight = 24; titleSize = 22; percentSize = 38; captionSize = 18; footerSize = 15; spacing = 10;
   }
 
   const accentColor = new Color("#1565c0");
   const bgColor = new Color("#1C1C1E");
-  const donutBg = new Color("#333333", 0.3);
+  const barBg = new Color("#333333", 0.3);
 
   const widget = new ListWidget();
   widget.backgroundColor = bgColor;
@@ -55,11 +55,11 @@ async function createWidget(auslastung) {
   title.leftAlignText();
   widget.addSpacer(spacing);
 
-  // Donut-Chart Bild
-  const donutImg = drawDonutChart(auslastung, donutSize, donutThickness, accentColor, donutBg);
+  // Ladebalken als Bild
+  const barImg = drawBarChart(auslastung, barWidth, barHeight, accentColor, barBg);
   const imgStack = widget.addStack();
   imgStack.addSpacer();
-  imgStack.addImage(donutImg);
+  imgStack.addImage(barImg);
   imgStack.addSpacer();
   widget.addSpacer(spacing);
 
@@ -99,34 +99,27 @@ async function createWidget(auslastung) {
   return widget;
 }
 
-function drawDonutChart(percent, size, thickness, fgColor, bgColor) {
+// Ladebalken zeichnen – nur dokumentierte Methoden!
+function drawBarChart(percent, width, height, fgColor, bgColor) {
   const ctx = new DrawContext();
-  ctx.size = new Size(size, size);
+  ctx.size = new Size(width, height);
   ctx.opaque = false;
   ctx.respectScreenScale = true;
 
-  // Hintergrund-Kreis (vollständig)
-  ctx.setStrokeColor(bgColor);
-  ctx.setLineWidth(thickness);
-  ctx.strokeEllipse(new Rect(thickness/2, thickness/2, size-thickness, size-thickness));
+  // Hintergrund-Balken
+  ctx.setFillColor(bgColor);
+  ctx.fillRect(new Rect(0, 0, width, height));
 
-  // Vordergrund-Bogen (Teilkreis)
+  // Fortschritts-Balken
   if (typeof percent === "number" && percent > 0) {
-    const path = new Path();
-    const center = new Point(size/2, size/2);
-    const radius = (size - thickness) / 2;
-    const startAngle = -Math.PI/2;
-    const endAngle = startAngle + (2 * Math.PI * percent / 100);
-
-    // Pfad für Bogen
-    path.addArc(center, radius, startAngle, endAngle, false);
-
-    ctx.addPath(path);
-    ctx.setStrokeColor(fgColor);
-    ctx.setLineWidth(thickness);
-    ctx.strokePath();
+    ctx.setFillColor(fgColor);
+    ctx.fillRect(new Rect(0, 0, width * (percent/100), height));
   }
+
+  // Rahmen (optional)
+  ctx.setStrokeColor(Color.gray());
+  ctx.setLineWidth(1);
+  ctx.strokeRect(new Rect(0, 0, width, height));
 
   return ctx.getImage();
 }
-
