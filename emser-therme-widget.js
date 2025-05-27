@@ -54,7 +54,7 @@ async function showPreview(widget, widgetSize) {
 
 function getSizes(widgetSize) {
   if (widgetSize === "small") {
-    return { barWidth: 60, barHeight: 24, titleSize: 18, percentSize: 30, captionSize: 14, footerSize: 10, spacing: 6, padding: 8 };
+    return { barWidth: 100, barHeight: 18, titleSize: 18, percentSize: 30, captionSize: 14, footerSize: 10, spacing: 6, padding: 8 };
   } else if (widgetSize === "medium") {
     return { barWidth: 180, barHeight: 18, titleSize: 18, percentSize: 36, captionSize: 16, footerSize: 12, spacing: 6, padding: 8 };
   } else {
