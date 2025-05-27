@@ -127,4 +127,3 @@ function drawPieChart(percent, size, color) {
 
   return ctx.getImage();
 }
-}
