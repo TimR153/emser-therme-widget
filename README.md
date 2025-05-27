@@ -24,6 +24,11 @@ This Scriptable widget displays the current occupancy of the Emser Therme as a p
 
 The widget displays the current occupancy of Emser Therme as a progress bar with a percentage value. If no data is available, it will show "Keine Daten" (No Data).
 
+## Disclaimer
+
+This project is not affiliated with, sponsored by, or endorsed by Emser Therme.  
+All data is retrieved from the publicly available Emser Therme website.
+
 ## License
 
 This project is licensed under the MIT License.
