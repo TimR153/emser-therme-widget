@@ -14,7 +14,7 @@ async function getAuslastung() {
   try {
     const req = new Request(URL);
     const html = await req.loadString();
-    const match = html.match(/<div class="current">(\d+)%<\/div>/);
+    const match = html.match(/<h3 class="bold mb-0">(\d+)%<\/h3>/);
     if (match && match[1]) {
       return parseInt(match[1]);
     }
