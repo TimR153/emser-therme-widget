@@ -1,6 +1,11 @@
 const URL = "https://www.emser-therme.de/";
 const widgetSize = config.widgetFamily || "large";
+const VERSION = "1.0.1";
+const USER = "TimR153";
+const REPO = "emser-therme-widget";
 
+let showExclamation = false;
+await checkForUpdates();
 const auslastung = await getAuslastung();
 const widget = await createWidget(auslastung, widgetSize);
 
@@ -9,6 +14,41 @@ if (!config.runsInWidget) {
 }
 Script.setWidget(widget);
 Script.complete();
+
+async function checkForUpdates() {
+  const apiUrl = `https://api.github.com/repos/${USER}/${REPO}/releases/latest`;
+  try {
+    const req = new Request(apiUrl);
+    const json = await req.loadJSON();
+    if (!json.tag_name) return;
+    const latest = json.tag_name.replace(/^v/, "");
+    if (isMinorOrMajorUpdate(latest, VERSION)) {
+      showExclamation = true;
+
+      if (!config.runsInWidget) {
+        let alert = new Alert();
+        alert.title = "Update available!";
+        alert.message = `A new version (${latest}) is available on GitHub.\nYour version: ${VERSION}`;
+        alert.addAction("Open GitHub");
+        alert.addCancelAction("Later");
+        let response = await alert.present();
+        if (response === 0) Safari.openInApp(json.html_url, false);
+      }
+    }
+  } catch (e) {
+    console.warn("Update check failed:", e);
+    return false;
+  }
+}
+
+function isMinorOrMajorUpdate(a, b) {
+  const pa = a.split(".").map(Number);
+  const pb = b.split(".").map(Number);
+  if ((pa[0]||0) > (pb[0]||0)) return true;
+  if ((pa[0]||0) < (pb[0]||0)) return false;
+  if ((pa[1]||0) > (pb[1]||0)) return true;
+  return false;
+}
 
 async function getAuslastung() {
   try {
@@ -63,7 +103,8 @@ function getSizes(widgetSize) {
 }
 
 function addTitle(widget, accentColor, titleSize, spacing) {
-  const title = widget.addText("Emser Therme");
+  const titleText = showExclamation ? "↑ Emser Therme" : "Emser Therme";
+  const title = widget.addText(titleText);
   title.font = Font.boldSystemFont(titleSize);
   title.textColor = accentColor;
   title.leftAlignText();
